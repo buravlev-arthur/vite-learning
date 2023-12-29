@@ -112,3 +112,53 @@ const styleEl = document.createElement('style');
 styleEl.innerText = styles;
 document.querySelector('head').append(styleEl);
 ```
+
+## CSS-модули
+
+СSS-модули:
+
+```css
+/* a.module.css */
+.heading {
+    font-size: 30;
+}
+```
+
+```css
+/* b.module.css */
+.heading {
+    color: red;
+}
+```
+
+Импорт и работа с CSS-модулями:
+
+```javascript
+import stylesA from './src/assets/a.module.css';
+import stylesB from './src/assets/b.module.css';
+// получаем значения с уникальными названиями классов,
+// которые добавляются в отдельные теги <style> в HTML-файле
+console.log(stylesA); // { heading: '_heading_i0ouq_1' }
+console.log(stylesB); // { heading: '_heading_1nd3s_1' }
+```
+
+```javascript
+// применение уникальных классов модулей к HTML-элементу
+document.querySelector('.heading').className = `${stylesA.heading} ${stylesB.heading}`;
+```
+
+Теперь HTML-элемент будет выглядить примерно так:
+
+```HTML
+<!-- конфликтный класс .heading заменен на два уникальных класса -->
+<h1 class="_heading_1nd3s_1 _heading_i0ouq_1">Hello, Vite!</h1>
+```
+
+Можно пользоваться диструктуризацией импортируемого объекта:
+
+```javascript
+// возвращается { heading: 'uniq_class_name' }
+import { heading as fontSize } from './src/assets/04a.module.css';
+import { heading as textColor } from './src/assets/04b.module.css';
+document.querySelector('.heading').className = `${fontSize} ${textColor}`;
+```
