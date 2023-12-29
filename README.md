@@ -74,3 +74,41 @@ import __vite__cjsImport0_collect_js from "/node_modules/.vite/deps/collect__js.
 // присваивание импортируемого модуля константе "collect" (как в оригинальном коде) 
 const collect = __vite__cjsImport0_collect_js.__esModule ? __vite__cjsImport0_collect_js.default : __vite__cjsImport0_collect_js;
 ```
+
+## Работа с CSS
+
+### Добавление CSS в HTML-код
+
+CSS импортируется как обычный ES-модуль в `main.js`:
+
+```javascript
+import './src/assets/style.css'
+```
+
+_Vite_ преобразует css в JavaScript-код, присваивая css-строки константе `__vite__css`:
+
+```javascript
+const __vite__css = "body {\n    background-color: #18181D;\n    color: white;\n}\n"
+```
+
+Далее _Vite_ производит inline-вставку css-кода из константы `__vite__css`:
+
+```html
+<style type="text/css" data-vite-dev-id="/home/arthur/dev/vite-learning/src/assets/03.css">
+body {
+    background-color: #18181D;
+    color: white;
+}
+</style>
+```
+
+### Получение CSS-кода без добавления в HTML
+
+```javascript
+import styles from './src/assets/style.css?inline';
+console.log(styles);
+// добавление в html-код стилей вручную
+const styleEl = document.createElement('style');
+styleEl.innerText = styles;
+document.querySelector('head').append(styleEl);
+```
