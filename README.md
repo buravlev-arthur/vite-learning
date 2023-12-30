@@ -205,3 +205,26 @@ export default {
 <!-- задание тегу body цвета фона и текста в index.html-->
 <body class="bg-[#18181A] text-white"></body>
 ```
+
+## CSS препроцессоры
+
+_Vite_ поддерживает несколько CSS-препроцессоров: LESS, SASS, Stylys. Для их использования достаточно просто установить нужную зависимость с выбранным препроцессором:
+
+```bash
+bun i -D sass
+```
+
+Аналогично с css-модулями, в _Vite_ можно использовать модули препроцессоров:
+
+```sass
+/* /src/assets/style.module.sass */
+.class-name
+    font-size: 30
+    color: white
+```
+
+```javascript
+import style from '/src/assets/style.module.sass';
+console.log(style); // { "class-name": "_class_name_fw9yu_1" }
+document.body.className = style['class-name']; // добавляем уникальный класс к body
+```
