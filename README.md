@@ -162,3 +162,46 @@ import { heading as fontSize } from './src/assets/04a.module.css';
 import { heading as textColor } from './src/assets/04b.module.css';
 document.querySelector('.heading').className = `${fontSize} ${textColor}`;
 ```
+
+## PostCSS плагины
+
+При импорте CSS-файлов к ним применяются трансформации с помощью утилиты PostCSS. Соответственно, в _Vite_ можно использовать PostCSS-плагины.
+
+Установка и инициализация Tailwindcss:
+
+```bash
+bun i -D tailwindcss postcss autoprefixer
+# создаст postcss.config.js и tailwind.config.js в корне Vite-проекта
+bunx tailwindcss init -p
+```
+
+Теперь при трансформации импортируемых css-модулей будут учитываться настройки из `postcss.config.js`. По умолчанию в `postcss.config.js` добавлены два плагина:
+
+- `tailwindcss` (обеспечивает работы tailwind-классов)
+
+- `autoprefixer` (добавляет префиксы к некоторым css-свойствам для разных браузеров)
+
+В `tailwind.config.js` необходимо указать, в каких файлах будут использоваться tailwind-классы:
+
+```javascript
+// tailwind.config.js
+export default {
+  content: ['./index.html']
+}
+```
+
+Для работы tailwind-классов нужно в корневой css-файл добавить его директивы:
+
+```css
+/* /src/assets/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+В `/index.html` теперь можно использовать tailwind-классы и они будут трансформированы "на лету" в стили с помощью чтения конфигурации из `postcss.config.js` и использования подключенных в нём postcss-плагинов:
+
+```html
+<!-- задание тегу body цвета фона и текста в index.html-->
+<body class="bg-[#18181A] text-white"></body>
+```
