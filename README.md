@@ -290,3 +290,44 @@ export default {
   publicDir: 'build'
 }
 ```
+
+## Объект Glob
+
+С помощью функции `glob()` объекта `import` можно импортировать сразу несколько объектов:
+
+```javascript
+// импорти всех .js-модулей из директории src
+const modules = import.meta.glob('/src/*.js'); // { '/src/module.js': () => import('/src/module.js'), ... }
+```
+
+Загрузить модули и получить их данные:
+
+```javascript
+const modules = import.meta.glob('/src/*.js');
+Object.values(modules).forEach(async (module) => {
+    const moduleData = await module(); // загружаем модуль
+    console.log(moduleData); // выводим объект с экспортируемыми данными модуля в консоль
+});
+```
+
+Загрузку модулей можно повесить на какое-либо событие:
+
+```javascript
+document.addEventListener('click', () => {
+  Object.values(modules).forEach(async (module) => { await module() });
+})
+```
+
+Можно отключить асинхронную загрузку модулей и загружать их сразу c помощью `eager` в значении `true`. 
+В возвращаем объекте значениями будут экспортируемые данных загруженных модулей.
+
+```javascript
+const modules = import.meta.glob('/src/*.js', { eager: true });
+console.log(modules); // { '/src/module.js': () => { export1: value, ... }, ... }
+```
+
+В этом случае динамические импорты (`() => import('/src/module.js')`) заменены на статические импорты:
+
+```javascript
+import * as __vite_glob_0_0 from '/src/module.js'
+```
