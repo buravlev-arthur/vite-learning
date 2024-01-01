@@ -228,3 +228,43 @@ import style from '/src/assets/style.module.sass';
 console.log(style); // { "class-name": "_class_name_fw9yu_1" }
 document.body.className = style['class-name']; // добавляем уникальный класс к body
 ```
+
+## Импорт JSON
+
+_Vite_ при импорте `json`-файлов преобразует их в ES-модули с экспоротом всех JSON-полей и всей структуры JSON в виде валидного объекта.
+
+```javascript
+import data from './data.json';
+import { name, age } from './data.json' // можно делать деструктуризацию
+import url from './data.json?url' // получить путь к json-файлу
+console.log(data); // { name: "John", age: 40 }
+console.log(name, age); // John 40
+console.log(url); // /src/assets/data.json
+```
+
+## Импорт файлов (статические ассеты)
+
+По умолчанию _Vite_ экспортирует (export default) путь к файлу:
+
+```javascript
+import svgImg from './assets/img/testSVG.svg';
+console.log(svgImg); // image url
+```
+
+Можно присвоить путь к src-атрибут в HTML:
+
+```html
+<img id="svg-img" />
+```
+
+```javascript
+import svgImg from './assets/img/testSVG.svg';
+document.getElementById('svg-img').src = svgImg;
+```
+
+Можно получить исходный код файла (например, svg-данные) с помощью параметра `raw` в импорте:
+
+```javascript
+import svgSource from './assets/img/testSVG.svg?raw'
+console.log(svgSource); // <svg>...</svg>
+```
