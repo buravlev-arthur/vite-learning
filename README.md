@@ -499,3 +499,55 @@ export default {
   ],
 }
 ```
+
+## ESLint
+
+Для статической проверки _ESLint_ ts-файлов, используется инструмент: [typescript-eslint](https://typescript-eslint.io/).
+
+Установка зависимостей:
+
+```bash
+bun i -D  eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+```
+
+Конфигурационный файл `.eslintrc.cjs` в корне проекта:
+
+```cjs
+/* eslint-env node */
+module.exports = {
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint'],
+  root: true,
+};
+```
+
+Запуск проверки:
+
+```bash
+# "." - искать файлы для проверки в корне проекта
+bunx eslint .
+```
+
+Для игнорирования js-файлов нужно создать `.eslintignore` с содержимым:
+
+```
+*.js
+```
+
+### Интеграция ESLint в процесс сборки
+
+Для интеграции ESLint в процесс сборки необходимо установить зависимость `eslint` и добавить в конфигурацию плагина `vite-plugin-checker` настройки запуска eslint:
+
+```javascript
+import typeChecker from 'vite-plugin-checker';
+export default {
+  plugins: [
+    typeChecker({
+      eslint: {
+        lintCommand: 'eslint "./**/*.{ts,tsx}"'
+      }
+    })
+  ],
+}
+```
