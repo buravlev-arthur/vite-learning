@@ -318,6 +318,8 @@ document.addEventListener('click', () => {
 })
 ```
 
+### Статическая загрузка модулей
+
 Можно отключить асинхронную загрузку модулей и загружать их сразу c помощью `eager` в значении `true`. 
 В возвращаем объекте значениями будут экспортируемые данных загруженных модулей.
 
@@ -330,4 +332,102 @@ console.log(modules); // { '/src/module.js': () => { export1: value, ... }, ... 
 
 ```javascript
 import * as __vite_glob_0_0 from '/src/module.js'
+```
+
+### Строковое представление модулей
+
+```javascript
+const modules = import.meta.glob('/src/10/*.js', { as: 'raw', eager: true });
+console.log(modules); // { '/src/module.js': () => 'export default 2;', ... }
+```
+
+### URL модулей
+
+```javascript
+const urls = import.meta.glob('/src/10/*.js', { as: 'url', eager: true });
+console.log(urls); // { '/src/module.js': () => '/src/10/module.js?t=1029481002007', ... }
+```
+
+### Получение выбранных экспортов
+
+```javascript
+// предполагается, что в каждом модуле есть экспортируемая переменная/константа "name"
+const names = import.meta.glob('/src/10/*.js', { import: 'name', eager: true });
+// импорт значений, экспортируемых по умолчанию (export default)
+const defaults = import.meta.glob('/src/10/*.js', { import: 'default', eager: true });
+```
+
+## JSX
+
+Для интепретации `.jsx`-модулей, _Vite_ использует _esbuild_. В `vite.config.js`, в свойстве `jsxFactory` указываем функцию, которая должна быть вызвана для обработки JSX-данных:
+
+```javascript
+// vite.config.js
+export default {
+  esbuild: {
+    // функция для обработки JSX с названием: "create"
+    jsxFactory: 'create'
+  }
+}
+```
+
+Сама функция должна быть определена в коде JSX-модуля (или импортирована в JSX-модуль) и принимать три параметра:
+
+- `el` - название элемента
+
+- `attrs` - атрибуты элемента
+
+- `content` - содержимое элемента
+
+```javascript
+function create(el, attrs, content) {
+    console.log(el, attrs, content); // a { href: "#" } link
+}
+```
+
+Задача функции "create" состоит в формировании DOM-элементов (с учетом вложенности) из JSX-данных. Пример полной функции "create":
+
+```javascript
+function create(el, attrs, content) {    
+    // создаём элемент
+    const node = document.createElement(el);
+    // добавляем атрибуты
+    Object.entries(attrs || {}).forEach(([name, value]) => {
+        node.setAttribute(name, value);
+    });
+    // если у элемента есть текстовый контент
+    if (typeof content === 'string') {
+        // создаём текстовый элемент и добавляем его в основной элемент
+        const textNode = document.createTextNode(content);
+        node.appendChild(textNode);
+    } else {
+        // если у элемента есть дочерний элемент (в виде объекта) - добавляем его тоже
+        node.appendChild(content);
+    }
+
+    return node;
+}
+```
+
+Добавляем сформированный из JSX-данных HTML-код в документ:
+
+```html
+<div id="app"></div>
+```
+
+```javascript
+import { template } from '/src/element.jsx';
+console.log(template.outerHTML); // текстовый вывод html
+document.querySelector('#app').appendChild(template); // добавляем DOM-дерево в div с id="app"
+```
+
+Чтобы не импортировать в каждый JSX-модуль функцию "create", её импорт можно вынести в специальное поле `jsxInject` в `vite.config.js`:
+
+```javascript
+export default {
+  esbuild: {
+    jsxFactory: 'create',
+    jsxInject: 'import create from "/src/create.js"', // этот импорт будет добавлен во все JSX-модули
+  }
+}
 ```
