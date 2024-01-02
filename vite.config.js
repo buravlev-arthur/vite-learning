@@ -1,4 +1,5 @@
-import Inspect from 'vite-plugin-inspect'
+import Inspect from 'vite-plugin-inspect';
+import typeChecker from 'vite-plugin-checker';
 
 export default {
   // publicDir: 'build',
@@ -7,6 +8,9 @@ export default {
     jsxInject: 'import create from "/src/12-create.js"',
   },
   plugins: [
-    Inspect()
+    Inspect(),
+    typeChecker({
+      typescript: true,
+    })
   ],
 }
