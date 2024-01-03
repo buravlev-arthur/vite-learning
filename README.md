@@ -551,3 +551,91 @@ export default {
   ],
 }
 ```
+
+
+## Псевдонимы путей
+
+Использование псевдонима пути `@`:
+
+```javascript
+// /src/assets/style.css
+import '@/style.css';
+```
+
+Конфигурирование псевдонима `@` в `vite.config.js`:
+
+```javascript
+// vite.config.js
+export default {
+  resolve: {
+    alias: {
+      '@': new URL('src/assets', import.meta.url).pathname
+    }
+  }
+}
+```
+
+## Переменные окружения
+
+_Vite_ переменные окружения хранит в объекте `import.meta.env`:
+
+```javascript
+// Все доступные переменные окружения
+console.log(import.meta.env);
+```
+
+Проверить текущую среду (development или production):
+
+```javascript
+const envVars = import.meta.env;
+const isDev = envVars.DEV && envVars.MODE === 'development';
+const isProd = envVars.PROD && envVars.MODE === 'production';
+```
+
+Свои переменные окружения нужно указывать в файле `.env` (в корне проекта) с обязательным префиксом `VITE_`:
+
+```text
+VITE_VAR="Test"
+```
+
+Префикс переменных можно переопределить:
+
+```javascript
+// vite.config.js
+export default {
+  envPrefix: 'APP_', // Пример переменной в .env-файле: APP_TEST="test"
+}
+```
+
+Для каждой среды можно определить свой `.env`-файл:
+
+- `.env.development`
+
+- `.env.production`
+
+- `.env.staging` (кастомная среда)
+
+Или эти же файлы с игнорированием git:
+
+- `.env.local`
+
+- `.env.production.local`
+
+Для запуска сборки в кастомном режиме, нужно указать параметр `--mode`:
+
+```bash
+vite build --mode staging
+```
+
+Переменные окружения можно также указывать в команде запуска _Vite_ проекта:
+
+```bash
+# данное значение имеет приоритет на определенной с таким же названием в .env-файлах
+VITE_TEST_VAR=value bun run build
+```
+
+К переменным окружения можно получить доступ в HTML:
+
+```html
+<p>%VITE_VAR%</p>
+```
