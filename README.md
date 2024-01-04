@@ -665,3 +665,157 @@ export default {
   }
 }
 ```
+
+## Режим библиотеки
+
+Для реализации npm-пакета в _Vite_ необходимо определить соответствующую конфигурацию в `vite.config.js`:
+
+```javascript
+export default {
+  build: {
+    // сообщаем Vite, что это библиотека
+    lib: {
+      entry: new URL('src/index.js', import.meta.url).pathname, // путь к главноему js-файлу
+      name: 'Pluck', // название библиотеки
+      fileName: 'pluck' // название js-файла после сборки
+    }
+  }
+}
+```
+
+После сборки (`bun run build`), _Vite_ создаст два файла: `pluck.js` (ES-модуль) и `pluck.umd.cjs` (CommonJS-модуль).
+
+Для использования библиотеки в других приложениях нужно сконфигурировать `package.json`:
+
+```json
+{
+  "name": "pluck",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/pluck.umd.cjs",
+  "module": "./dist.pluck.js",
+  "exports": {
+    ".": {
+      "import": "./dist/pluck.js",
+      "require": "./dist/pluck.umd.cjs"
+    }
+  }
+}
+```
+
+C помощью команды `bun link` можно сделать покет доступным в ОС глобально доступным.
+
+В директории клиентского приложения (которое использует пакет `pluck`), нужно выполнить команду:
+
+```bash
+bun link pluck
+```
+
+После этого в `node_modules` клиентского приложения появится ссылка на директорию с пакетом `pluck` и можно будет воспользоваться импортом:
+
+```js
+import { pluck } from 'pluck';
+```
+
+### Несколько точек входа
+
+Представим, что в библиотеке есть несколько модулей, которые экспортируют функции `pluck` и `log` соответственно:
+
+```
+/src
+  -- pluck.js
+  -- log.js
+```
+
+Мы хотим добиться, чтобы осуществлялись импорты из пути и подпути пакета:
+
+```javascript
+import { pluck } from 'pluck';
+import { log } from 'pluck/log';
+```
+
+Для этого необходимо в `vite.config.js`, в `build.lib` указать в качестве значения поля `entry` массив с js-модулями и определить функцию для генерации имен модулеф в сборке в `fileName`:
+
+```javascript
+export default {
+  build: {
+    lib: {
+      // имя пакета
+      name: 'Pluck',
+      // пути к js-модулям с кодом пакета
+      entry: [
+        new URL('src/pluck.js', import.meta.url).pathname,
+        new URL('src/log.js', import.meta.url).pathname,
+      ],
+      /**
+       * Метод генерирует модули в сборке из исходных в массиве "entry"
+       * @param format - формат модуля (es, cjs и т.п.)
+       * @param name - имя оригинального модуля
+       * @returns 
+       */
+      fileName: (format, name) => {
+        if (format === 'es') {
+            return `${name}.js`
+        }
+        return `${name}.${format}`
+      }
+    }
+  }
+}
+```
+
+При сборке библиотеки (`bun run build`), будут в итоге созданы четыре файла:
+
+```
+/dist
+  -- pluck.js
+  -- pluck.cjs
+  -- log.js
+  -- log.cjs
+```
+
+В файле `package.json` оставляем главным модулем `pluck.js`, и определяем доступные экспорты с собранным выше модулям:
+
+```json
+{
+  "main": "./dist/pluck.cjs",
+  "module": "./dist/pluck.js",
+  "exports": {
+    ".": {
+      "import": "./dist/pluck.js",
+      "require": "./dist/pluck.cjs"
+    },
+    "./log": {
+      "import": "./dist/log.js",
+      "require": "./dist/log.cjs"
+    }
+  },
+}
+```
+
+Теперь можно воспользоваться обеими функциями в приложении:
+
+```javascript
+import { pluck } from 'pluck';
+import { log } from 'pluck/log';
+
+const users = [
+  { name: 'John', age: 0 },
+  /*...*/
+];
+
+// "log" выводит в консоль результат работы "pluck"
+log(pluck(users, 'name'));
+```
+
+### Импорт CommonJS-модулей из библиотеки
+
+Пакет `pluck` помимо экспорта ES-модулей, экспортирует также CommonJS-модули для NodeJS-среды. CommonJS-модули импортируются с помощью `require`:
+
+```javascript
+// main.cjs
+const { pluck } = require('pluck');
+const { log } = require('pluck/log');
+```
+
+Если в пакете (биболиотеке) поле "main" определно как "module" (в `package.json`), вместо значения "commonjs", модули с импортрами `require` должны быть с расшерением: `.cjs` или `.cts` (Typescript CommonJS модули).

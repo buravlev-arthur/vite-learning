@@ -1,0 +1,26 @@
+{
+  "name": "pluck",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/pluck.cjs",
+  "module": "./dist/pluck.js",
+  "exports": {
+    ".": {
+      "import": "./dist/pluck.js",
+      "require": "./dist/pluck.cjs"
+    },
+    "./log": {
+      "import": "./dist/log.js",
+      "require": "./dist/log.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8"
+  }
+}
