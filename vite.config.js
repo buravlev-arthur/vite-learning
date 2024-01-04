@@ -21,5 +21,13 @@ export default {
     alias: {
       '@': new URL('src/assets', import.meta.url).pathname
     }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: new URL('index.html', import.meta.url).pathname,
+        login: new URL('login/index.html', import.meta.url).pathname
+      }
+    }
   }
 }

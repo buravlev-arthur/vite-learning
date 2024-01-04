@@ -639,3 +639,29 @@ VITE_TEST_VAR=value bun run build
 ```html
 <p>%VITE_VAR%</p>
 ```
+
+## Многостраничная сборка
+
+Для добавления новой страницы нужно создать директорию с содержимым:
+
+```
+/page
+  -- index.html
+  -- page.js
+```
+
+И в `vite.config.js` указать пути к главной и новой страницам:
+
+```javascript
+// vite.config.js
+export default {
+  build: {
+    rollupOptions: {
+      input: {
+        'main': new URL('index.html', import.meta.url).pathname,
+        'page': new URL('page/index.html', import.meta.url).pathname
+      }
+    }
+  }
+}
+```
