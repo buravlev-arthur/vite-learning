@@ -1,5 +1,6 @@
 import Inspect from 'vite-plugin-inspect';
 import typeChecker from 'vite-plugin-checker';
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
 export default {
   // publicDir: 'build',
@@ -14,6 +15,11 @@ export default {
       typescript: true,
       eslint: {
         lintCommand: 'eslint "./**/*.{ts,tsx}"'
+      }
+    }),
+    ViteImageOptimizer({
+      jpg: {
+        quality: 10
       }
     })
   ],

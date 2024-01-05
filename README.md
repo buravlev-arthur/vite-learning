@@ -902,3 +902,44 @@ bun i @username/package-name
 ```bash
 npm version patch #обновление третьей цифры в полной версии пакета
 ```
+
+## Оптимизация изображений
+
+Для оптимизации изображений применяется плагин: `vite-plugin-image-optimizer` и две библиотеки (`sharp`, `svgo`), которые он использует для оптимизации:
+
+```bash
+bun i -D vite-plugin-image-optimazer sharp svgo
+```
+
+Конфигурируем плагин в `vite.config.js`:
+
+```javascript
+// vite.config.js
+import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
+
+export default {
+  plugins: [
+    ViteImageOptimizer({
+      /* config */
+    }),
+  ],
+};
+```
+
+Конфигурация плагина описана: [здесь](https://github.com/FatehAK/vite-plugin-image-optimizer?tab=readme-ov-file#default-configuration).
+
+Например, для указания допустимого снижения качества JPEG-изображения подойдет следующая конфигурация:
+
+```javascript
+ViteImageOptimizer({
+  jpg: {
+    quality: 80,
+  },
+});
+```
+
+Оптимизация изображений происходит только при сборке проекта:
+
+```bash
+bun run build
+```
