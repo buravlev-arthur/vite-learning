@@ -19,6 +19,10 @@ export default {
                 }
                 return `${name}.${format}`
             }
-        }
-    }
+        },
+        rollupOptions: {
+            // исколючаем пакет collect.js из сборки
+            external: ['collect.js']
+        },
+    },
 };

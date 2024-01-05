@@ -1,5 +1,5 @@
-const { pluck } = require('pluck');
-const { log } = require('pluck/log');
+const { pluckAndLog } = require('@buravlev-arthur/pluck');
+const { log } = require('@buravlev-arthur/pluck/log');
 
 const users = [
     { name: 'John', age: 30 },
@@ -7,4 +7,4 @@ const users = [
     { name: 'Smith', age: 44 },
 ];
 
-log(pluck(users, 'name'));
+pluckAndLog(users, 'name');

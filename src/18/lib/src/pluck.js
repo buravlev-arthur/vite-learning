@@ -1,3 +1,7 @@
-export const pluck = (collection, field) => {
-    return collection.map((item) => item[field]);
+import collect from 'collect.js';
+
+export const pluckAndLog = (items, field) => {
+    const plucked = collect(items).pluck(field);
+    console.log(plucked);
+    return plucked;
 }

@@ -1,15 +1,6 @@
 {
   "name": "vite-learning",
-  "private": true,
   "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "tsc": "tsc --noEmit",
-    "lint": "bunx eslint ."
-  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
@@ -23,7 +14,13 @@
     "vite-plugin-checker": "^0.6.2",
     "vite-plugin-inspect": "^0.8.1"
   },
-  "dependencies": {
-    "collect.js": "^4.36.1"
-  }
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tsc": "tsc --noEmit",
+    "lint": "bunx eslint ."
+  },
+  "type": "module"
 }

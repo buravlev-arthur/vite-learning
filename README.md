@@ -34,13 +34,11 @@ bun add -D vite-plugin-inspect
 
 ```javascript
 // vite.config.js
-import Inspect from 'vite-plugin-inspect'
+import Inspect from "vite-plugin-inspect";
 
 export default {
-  plugins: [
-    Inspect()
-  ],
-}
+  plugins: [Inspect()],
+};
 ```
 
 Инспектор доступен по адресу: `http://localhost:5173/__inspect`.
@@ -65,14 +63,16 @@ export default {
 
 ```javascript
 // оригинальный код
-import collect from 'collect.js'
+import collect from "collect.js";
 ```
 
 ```javascript
 // преобразованый импорт
 import __vite__cjsImport0_collect_js from "/node_modules/.vite/deps/collect__js.js?v=018f8eaa";
-// присваивание импортируемого модуля константе "collect" (как в оригинальном коде) 
-const collect = __vite__cjsImport0_collect_js.__esModule ? __vite__cjsImport0_collect_js.default : __vite__cjsImport0_collect_js;
+// присваивание импортируемого модуля константе "collect" (как в оригинальном коде)
+const collect = __vite__cjsImport0_collect_js.__esModule
+  ? __vite__cjsImport0_collect_js.default
+  : __vite__cjsImport0_collect_js;
 ```
 
 ## Работа с CSS
@@ -82,35 +82,39 @@ const collect = __vite__cjsImport0_collect_js.__esModule ? __vite__cjsImport0_co
 CSS импортируется как обычный ES-модуль в `main.js`:
 
 ```javascript
-import './src/assets/style.css'
+import "./src/assets/style.css";
 ```
 
 _Vite_ преобразует css в JavaScript-код, присваивая css-строки константе `__vite__css`:
 
 ```javascript
-const __vite__css = "body {\n    background-color: #18181D;\n    color: white;\n}\n"
+const __vite__css =
+  "body {\n    background-color: #18181D;\n    color: white;\n}\n";
 ```
 
 Далее _Vite_ производит inline-вставку css-кода из константы `__vite__css`:
 
 ```html
-<style type="text/css" data-vite-dev-id="/home/arthur/dev/vite-learning/src/assets/03.css">
-body {
-    background-color: #18181D;
+<style
+  type="text/css"
+  data-vite-dev-id="/home/arthur/dev/vite-learning/src/assets/03.css"
+>
+  body {
+    background-color: #18181d;
     color: white;
-}
+  }
 </style>
 ```
 
 ### Получение CSS-кода без добавления в HTML
 
 ```javascript
-import styles from './src/assets/style.css?inline';
+import styles from "./src/assets/style.css?inline";
 console.log(styles);
 // добавление в html-код стилей вручную
-const styleEl = document.createElement('style');
+const styleEl = document.createElement("style");
 styleEl.innerText = styles;
-document.querySelector('head').append(styleEl);
+document.querySelector("head").append(styleEl);
 ```
 
 ## CSS-модули
@@ -120,22 +124,22 @@ document.querySelector('head').append(styleEl);
 ```css
 /* a.module.css */
 .heading {
-    font-size: 30;
+  font-size: 30;
 }
 ```
 
 ```css
 /* b.module.css */
 .heading {
-    color: red;
+  color: red;
 }
 ```
 
 Импорт и работа с CSS-модулями:
 
 ```javascript
-import stylesA from './src/assets/a.module.css';
-import stylesB from './src/assets/b.module.css';
+import stylesA from "./src/assets/a.module.css";
+import stylesB from "./src/assets/b.module.css";
 // получаем значения с уникальными названиями классов,
 // которые добавляются в отдельные теги <style> в HTML-файле
 console.log(stylesA); // { heading: '_heading_i0ouq_1' }
@@ -144,7 +148,9 @@ console.log(stylesB); // { heading: '_heading_1nd3s_1' }
 
 ```javascript
 // применение уникальных классов модулей к HTML-элементу
-document.querySelector('.heading').className = `${stylesA.heading} ${stylesB.heading}`;
+document.querySelector(
+  ".heading"
+).className = `${stylesA.heading} ${stylesB.heading}`;
 ```
 
 Теперь HTML-элемент будет выглядить примерно так:
@@ -158,9 +164,9 @@ document.querySelector('.heading').className = `${stylesA.heading} ${stylesB.hea
 
 ```javascript
 // возвращается { heading: 'uniq_class_name' }
-import { heading as fontSize } from './src/assets/04a.module.css';
-import { heading as textColor } from './src/assets/04b.module.css';
-document.querySelector('.heading').className = `${fontSize} ${textColor}`;
+import { heading as fontSize } from "./src/assets/04a.module.css";
+import { heading as textColor } from "./src/assets/04b.module.css";
+document.querySelector(".heading").className = `${fontSize} ${textColor}`;
 ```
 
 ## PostCSS плагины
@@ -186,8 +192,8 @@ bunx tailwindcss init -p
 ```javascript
 // tailwind.config.js
 export default {
-  content: ['./index.html']
-}
+  content: ["./index.html"],
+};
 ```
 
 Для работы tailwind-классов нужно в корневой css-файл добавить его директивы:
@@ -224,9 +230,9 @@ bun i -D sass
 ```
 
 ```javascript
-import style from '/src/assets/style.module.sass';
+import style from "/src/assets/style.module.sass";
 console.log(style); // { "class-name": "_class_name_fw9yu_1" }
-document.body.className = style['class-name']; // добавляем уникальный класс к body
+document.body.className = style["class-name"]; // добавляем уникальный класс к body
 ```
 
 ## Импорт JSON
@@ -234,9 +240,9 @@ document.body.className = style['class-name']; // добавляем уника�
 _Vite_ при импорте `json`-файлов преобразует их в ES-модули с экспоротом всех JSON-полей и всей структуры JSON в виде валидного объекта.
 
 ```javascript
-import data from './data.json';
-import { name, age } from './data.json' // можно делать деструктуризацию
-import url from './data.json?url' // получить путь к json-файлу
+import data from "./data.json";
+import { name, age } from "./data.json"; // можно делать деструктуризацию
+import url from "./data.json?url"; // получить путь к json-файлу
 console.log(data); // { name: "John", age: 40 }
 console.log(name, age); // John 40
 console.log(url); // /src/assets/data.json
@@ -247,7 +253,7 @@ console.log(url); // /src/assets/data.json
 По умолчанию _Vite_ экспортирует (export default) путь к файлу:
 
 ```javascript
-import svgImg from './assets/img/testSVG.svg';
+import svgImg from "./assets/img/testSVG.svg";
 console.log(svgImg); // image url
 ```
 
@@ -258,14 +264,14 @@ console.log(svgImg); // image url
 ```
 
 ```javascript
-import svgImg from './assets/img/testSVG.svg';
-document.getElementById('svg-img').src = svgImg;
+import svgImg from "./assets/img/testSVG.svg";
+document.getElementById("svg-img").src = svgImg;
 ```
 
 Можно получить исходный код файла (например, svg-данные) с помощью параметра `raw` в импорте:
 
 ```javascript
-import svgSource from './assets/img/testSVG.svg?raw'
+import svgSource from "./assets/img/testSVG.svg?raw";
 console.log(svgSource); // <svg>...</svg>
 ```
 
@@ -274,7 +280,6 @@ console.log(svgSource); // <svg>...</svg>
 Статические файлы, которые не будут импортироваться в исходный код (как ES-модули после их преобразования с помощью _Vite_), но будут использоваться в приложении, должны храниться в директории `/public`. Файл `/public/img.jpg` в браузере можно будет получить по адресу `domain.name/img.jpg`.
 
 Статические файлы, импортируемые в модули проекта (обычно размещаются в `/src/assets`) изменют имена и добавляют к ним хэш в процессе сборки. Поэтому обратиться к ним напрямую из браузера нельзя.
-
 
 Пример использования статического файла из `/public` в HTML-коде:
 
@@ -287,8 +292,8 @@ console.log(svgSource); // <svg>...</svg>
 ```javascript
 // vite.config.js
 export default {
-  publicDir: 'build'
-}
+  publicDir: "build",
+};
 ```
 
 ## Объект Glob
@@ -297,54 +302,56 @@ export default {
 
 ```javascript
 // импорти всех .js-модулей из директории src
-const modules = import.meta.glob('/src/*.js'); // { '/src/module.js': () => import('/src/module.js'), ... }
+const modules = import.meta.glob("/src/*.js"); // { '/src/module.js': () => import('/src/module.js'), ... }
 ```
 
 Загрузить модули и получить их данные:
 
 ```javascript
-const modules = import.meta.glob('/src/*.js');
+const modules = import.meta.glob("/src/*.js");
 Object.values(modules).forEach(async (module) => {
-    const moduleData = await module(); // загружаем модуль
-    console.log(moduleData); // выводим объект с экспортируемыми данными модуля в консоль
+  const moduleData = await module(); // загружаем модуль
+  console.log(moduleData); // выводим объект с экспортируемыми данными модуля в консоль
 });
 ```
 
 Загрузку модулей можно повесить на какое-либо событие:
 
 ```javascript
-document.addEventListener('click', () => {
-  Object.values(modules).forEach(async (module) => { await module() });
-})
+document.addEventListener("click", () => {
+  Object.values(modules).forEach(async (module) => {
+    await module();
+  });
+});
 ```
 
 ### Статическая загрузка модулей
 
-Можно отключить асинхронную загрузку модулей и загружать их сразу c помощью `eager` в значении `true`. 
+Можно отключить асинхронную загрузку модулей и загружать их сразу c помощью `eager` в значении `true`.
 В возвращаем объекте значениями будут экспортируемые данных загруженных модулей.
 
 ```javascript
-const modules = import.meta.glob('/src/*.js', { eager: true });
+const modules = import.meta.glob("/src/*.js", { eager: true });
 console.log(modules); // { '/src/module.js': () => { export1: value, ... }, ... }
 ```
 
 В этом случае динамические импорты (`() => import('/src/module.js')`) заменены на статические импорты:
 
 ```javascript
-import * as __vite_glob_0_0 from '/src/module.js'
+import * as __vite_glob_0_0 from "/src/module.js";
 ```
 
 ### Строковое представление модулей
 
 ```javascript
-const modules = import.meta.glob('/src/10/*.js', { as: 'raw', eager: true });
+const modules = import.meta.glob("/src/10/*.js", { as: "raw", eager: true });
 console.log(modules); // { '/src/module.js': () => 'export default 2;', ... }
 ```
 
 ### URL модулей
 
 ```javascript
-const urls = import.meta.glob('/src/10/*.js', { as: 'url', eager: true });
+const urls = import.meta.glob("/src/10/*.js", { as: "url", eager: true });
 console.log(urls); // { '/src/module.js': () => '/src/10/module.js?t=1029481002007', ... }
 ```
 
@@ -352,9 +359,12 @@ console.log(urls); // { '/src/module.js': () => '/src/10/module.js?t=10294810020
 
 ```javascript
 // предполагается, что в каждом модуле есть экспортируемая переменная/константа "name"
-const names = import.meta.glob('/src/10/*.js', { import: 'name', eager: true });
+const names = import.meta.glob("/src/10/*.js", { import: "name", eager: true });
 // импорт значений, экспортируемых по умолчанию (export default)
-const defaults = import.meta.glob('/src/10/*.js', { import: 'default', eager: true });
+const defaults = import.meta.glob("/src/10/*.js", {
+  import: "default",
+  eager: true,
+});
 ```
 
 ## JSX
@@ -366,9 +376,9 @@ const defaults = import.meta.glob('/src/10/*.js', { import: 'default', eager: tr
 export default {
   esbuild: {
     // функция для обработки JSX с названием: "create"
-    jsxFactory: 'create'
-  }
-}
+    jsxFactory: "create",
+  },
+};
 ```
 
 Сама функция должна быть определена в коде JSX-модуля (или импортирована в JSX-модуль) и принимать три параметра:
@@ -381,31 +391,31 @@ export default {
 
 ```javascript
 function create(el, attrs, content) {
-    console.log(el, attrs, content); // a { href: "#" } link
+  console.log(el, attrs, content); // a { href: "#" } link
 }
 ```
 
 Задача функции "create" состоит в формировании DOM-элементов (с учетом вложенности) из JSX-данных. Пример полной функции "create":
 
 ```javascript
-function create(el, attrs, content) {    
-    // создаём элемент
-    const node = document.createElement(el);
-    // добавляем атрибуты
-    Object.entries(attrs || {}).forEach(([name, value]) => {
-        node.setAttribute(name, value);
-    });
-    // если у элемента есть текстовый контент
-    if (typeof content === 'string') {
-        // создаём текстовый элемент и добавляем его в основной элемент
-        const textNode = document.createTextNode(content);
-        node.appendChild(textNode);
-    } else {
-        // если у элемента есть дочерний элемент (в виде объекта) - добавляем его тоже
-        node.appendChild(content);
-    }
+function create(el, attrs, content) {
+  // создаём элемент
+  const node = document.createElement(el);
+  // добавляем атрибуты
+  Object.entries(attrs || {}).forEach(([name, value]) => {
+    node.setAttribute(name, value);
+  });
+  // если у элемента есть текстовый контент
+  if (typeof content === "string") {
+    // создаём текстовый элемент и добавляем его в основной элемент
+    const textNode = document.createTextNode(content);
+    node.appendChild(textNode);
+  } else {
+    // если у элемента есть дочерний элемент (в виде объекта) - добавляем его тоже
+    node.appendChild(content);
+  }
 
-    return node;
+  return node;
 }
 ```
 
@@ -416,9 +426,9 @@ function create(el, attrs, content) {
 ```
 
 ```javascript
-import { template } from '/src/element.jsx';
+import { template } from "/src/element.jsx";
 console.log(template.outerHTML); // текстовый вывод html
-document.querySelector('#app').appendChild(template); // добавляем DOM-дерево в div с id="app"
+document.querySelector("#app").appendChild(template); // добавляем DOM-дерево в div с id="app"
 ```
 
 Чтобы не импортировать в каждый JSX-модуль функцию "create", её импорт можно вынести в специальное поле `jsxInject` в `vite.config.js`:
@@ -426,10 +436,10 @@ document.querySelector('#app').appendChild(template); // добавляем DOM-
 ```javascript
 export default {
   esbuild: {
-    jsxFactory: 'create',
+    jsxFactory: "create",
     jsxInject: 'import create from "/src/create.js"', // этот импорт будет добавлен во все JSX-модули
-  }
-}
+  },
+};
 ```
 
 ## Typescript
@@ -489,15 +499,15 @@ bun i -D vite-plugin-checker
 Подключить плагин в `vite.config.js`:
 
 ```javascript
-import typeChecker from 'vite-plugin-checker';
+import typeChecker from "vite-plugin-checker";
 
 export default {
   plugins: [
     typeChecker({
       typescript: true,
-    })
+    }),
   ],
-}
+};
 ```
 
 ## ESLint
@@ -515,9 +525,9 @@ bun i -D  eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
 ```cjs
 /* eslint-env node */
 module.exports = {
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
-  parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  parser: "@typescript-eslint/parser",
+  plugins: ["@typescript-eslint"],
   root: true,
 };
 ```
@@ -540,18 +550,17 @@ bunx eslint .
 Для интеграции ESLint в процесс сборки необходимо установить зависимость `eslint` и добавить в конфигурацию плагина `vite-plugin-checker` настройки запуска eslint:
 
 ```javascript
-import typeChecker from 'vite-plugin-checker';
+import typeChecker from "vite-plugin-checker";
 export default {
   plugins: [
     typeChecker({
       eslint: {
-        lintCommand: 'eslint "./**/*.{ts,tsx}"'
-      }
-    })
+        lintCommand: 'eslint "./**/*.{ts,tsx}"',
+      },
+    }),
   ],
-}
+};
 ```
-
 
 ## Псевдонимы путей
 
@@ -559,7 +568,7 @@ export default {
 
 ```javascript
 // /src/assets/style.css
-import '@/style.css';
+import "@/style.css";
 ```
 
 Конфигурирование псевдонима `@` в `vite.config.js`:
@@ -569,10 +578,10 @@ import '@/style.css';
 export default {
   resolve: {
     alias: {
-      '@': new URL('src/assets', import.meta.url).pathname
-    }
-  }
-}
+      "@": new URL("src/assets", import.meta.url).pathname,
+    },
+  },
+};
 ```
 
 ## Переменные окружения
@@ -588,8 +597,8 @@ console.log(import.meta.env);
 
 ```javascript
 const envVars = import.meta.env;
-const isDev = envVars.DEV && envVars.MODE === 'development';
-const isProd = envVars.PROD && envVars.MODE === 'production';
+const isDev = envVars.DEV && envVars.MODE === "development";
+const isProd = envVars.PROD && envVars.MODE === "production";
 ```
 
 Свои переменные окружения нужно указывать в файле `.env` (в корне проекта) с обязательным префиксом `VITE_`:
@@ -603,8 +612,8 @@ VITE_VAR="Test"
 ```javascript
 // vite.config.js
 export default {
-  envPrefix: 'APP_', // Пример переменной в .env-файле: APP_TEST="test"
-}
+  envPrefix: "APP_", // Пример переменной в .env-файле: APP_TEST="test"
+};
 ```
 
 Для каждой среды можно определить свой `.env`-файл:
@@ -658,12 +667,12 @@ export default {
   build: {
     rollupOptions: {
       input: {
-        'main': new URL('index.html', import.meta.url).pathname,
-        'page': new URL('page/index.html', import.meta.url).pathname
-      }
-    }
-  }
-}
+        main: new URL("index.html", import.meta.url).pathname,
+        page: new URL("page/index.html", import.meta.url).pathname,
+      },
+    },
+  },
+};
 ```
 
 ## Режим библиотеки
@@ -675,12 +684,12 @@ export default {
   build: {
     // сообщаем Vite, что это библиотека
     lib: {
-      entry: new URL('src/index.js', import.meta.url).pathname, // путь к главноему js-файлу
-      name: 'Pluck', // название библиотеки
-      fileName: 'pluck' // название js-файла после сборки
-    }
-  }
-}
+      entry: new URL("src/index.js", import.meta.url).pathname, // путь к главноему js-файлу
+      name: "Pluck", // название библиотеки
+      fileName: "pluck", // название js-файла после сборки
+    },
+  },
+};
 ```
 
 После сборки (`bun run build`), _Vite_ создаст два файла: `pluck.js` (ES-модуль) и `pluck.umd.cjs` (CommonJS-модуль).
@@ -714,7 +723,7 @@ bun link pluck
 После этого в `node_modules` клиентского приложения появится ссылка на директорию с пакетом `pluck` и можно будет воспользоваться импортом:
 
 ```js
-import { pluck } from 'pluck';
+import { pluck } from "pluck";
 ```
 
 ### Несколько точек входа
@@ -730,8 +739,8 @@ import { pluck } from 'pluck';
 Мы хотим добиться, чтобы осуществлялись импорты из пути и подпути пакета:
 
 ```javascript
-import { pluck } from 'pluck';
-import { log } from 'pluck/log';
+import { pluck } from "pluck";
+import { log } from "pluck/log";
 ```
 
 Для этого необходимо в `vite.config.js`, в `build.lib` указать в качестве значения поля `entry` массив с js-модулями и определить функцию для генерации имен модулеф в сборке в `fileName`:
@@ -741,27 +750,27 @@ export default {
   build: {
     lib: {
       // имя пакета
-      name: 'Pluck',
+      name: "Pluck",
       // пути к js-модулям с кодом пакета
       entry: [
-        new URL('src/pluck.js', import.meta.url).pathname,
-        new URL('src/log.js', import.meta.url).pathname,
+        new URL("src/pluck.js", import.meta.url).pathname,
+        new URL("src/log.js", import.meta.url).pathname,
       ],
       /**
        * Метод генерирует модули в сборке из исходных в массиве "entry"
        * @param format - формат модуля (es, cjs и т.п.)
        * @param name - имя оригинального модуля
-       * @returns 
+       * @returns
        */
       fileName: (format, name) => {
-        if (format === 'es') {
-            return `${name}.js`
+        if (format === "es") {
+          return `${name}.js`;
         }
-        return `${name}.${format}`
-      }
-    }
-  }
-}
+        return `${name}.${format}`;
+      },
+    },
+  },
+};
 ```
 
 При сборке библиотеки (`bun run build`), будут в итоге созданы четыре файла:
@@ -789,23 +798,23 @@ export default {
       "import": "./dist/log.js",
       "require": "./dist/log.cjs"
     }
-  },
+  }
 }
 ```
 
 Теперь можно воспользоваться обеими функциями в приложении:
 
 ```javascript
-import { pluck } from 'pluck';
-import { log } from 'pluck/log';
+import { pluck } from "pluck";
+import { log } from "pluck/log";
 
 const users = [
-  { name: 'John', age: 0 },
+  { name: "John", age: 0 },
   /*...*/
 ];
 
 // "log" выводит в консоль результат работы "pluck"
-log(pluck(users, 'name'));
+log(pluck(users, "name"));
 ```
 
 ### Импорт CommonJS-модулей из библиотеки
@@ -814,8 +823,82 @@ log(pluck(users, 'name'));
 
 ```javascript
 // main.cjs
-const { pluck } = require('pluck');
-const { log } = require('pluck/log');
+const { pluck } = require("pluck");
+const { log } = require("pluck/log");
 ```
 
 Если в пакете (биболиотеке) поле "main" определно как "module" (в `package.json`), вместо значения "commonjs", модули с импортрами `require` должны быть с расшерением: `.cjs` или `.cts` (Typescript CommonJS модули).
+
+### Сторонние пакеты в библиотеке
+
+Необходимо обычном образом установить необходимые зависимости в библиотеку:
+
+```bash
+bun i collect.js
+```
+
+Но в таком случае в библиотеку будет включен весь код сторонних зависимостей, что увеличивает размер бандлов. Сторонние пакеты можно игнорировать при сборке библиотеке с помощью опции `build.rollupOptins.external`:
+
+```javascript
+// vite.config.js
+export default {
+  build: {
+    rollupOptions: {
+      // исколючаем пакет collect.js из сборки
+      external: ["collect.js"],
+    },
+  },
+};
+```
+
+Все пакеты, указанные в свойстве `external` не нужно устанавливать в библиотеке.
+
+Теперь сторонние пакеты не включены в бандлы. Но при импорте и запуске экспортов библиотеки в приложении будет появляться ошибка:
+
+```
+The following dependencies are imported bun could not be resolved:
+collect.js
+```
+
+Для её устранения необходимо указать в `package.json` библиотеки, какие сторонние зависимости должно установить клиентское приложение при установке этой библиотеки с помощью поля `peerDependencies`:
+
+```json
+{
+  "peerDependencies": {
+    "collect.js": "^4.36.1"
+  }
+}
+```
+
+### Публикация библиотеки (пакета) в npm-репозитории
+
+В имени пакета должно быть указано пространство имен, совпадающее с именем npm-пользователя. Также параметр `private` должен быть в значении `false`. А в массиве `files` нужно перечислить директории и файлы, которые нужно публиковать:
+
+```json
+{
+  "name": "@username/package-name",
+  "private": "false",
+  "files": ["dist"]
+}
+```
+
+Для публикации сначала необходимо аутентифицироваться как npm-пользователь, затем опубликовать пакет с флагом `access` со значением `public`:
+
+```bash
+# находясь в директории проекта
+npm login
+# после входа - сама публикация
+npm publish --access public
+```
+
+Теперь этот пакет доступен для установки:
+
+```bash
+bun i @username/package-name
+```
+
+При новой публикации пакета необходимо обновлять его версию:
+
+```bash
+npm version patch #обновление третьей цифры в полной версии пакета
+```
