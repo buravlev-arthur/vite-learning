@@ -943,3 +943,137 @@ ViteImageOptimizer({
 ```bash
 bun run build
 ```
+
+## Создание плагина
+
+Пример vite-плагина, преобразующего csv-данные в валидный ES-модуль (экспортируемый массив/объект). "из коробки" _Vite_ не умеет читать CSV-файлы.
+Для создания плагина будем пользоваться пакетами: `vite-plugin-inspect` (vite-плагин для отслеживания преобразований модулей), `csv-parse` (парсер из CSV в массивы/объекты):
+
+```bash
+bun i vite-plugin-inspect csv-parse
+```
+
+Конфигурация `vite-plugin-inspect`:
+
+```javascript
+// vite.config.js
+import Inspect from 'vite-plugin-inspect';
+
+export default {
+  plugins: [
+    Inspect()
+  ]
+}
+```
+
+Плагин в _Vite_ - это объект с именем и методом `transform`, который вызывается при каждом импорте любого модуля:
+
+```javascript
+// vite.config.js
+import { parse } from 'csv-parse/sync';
+
+// будет определен в хуке "configResolved"
+let config = null;
+
+export default {
+  plugins: [
+    {
+      // название плагина
+      name: 'csv',
+
+      // когда использовать плагин (в процессе разработки - "server", при сборке - "build")
+      apply: 'server',
+
+      /*
+        Функция-замыкание
+        config - конфигурационный объект (plugins, mode, server, optimizeDeps)
+        command - команда запуска (serve, build)
+        mode - режим исполнения приложения (development, production)
+      */
+      apply(config, { command, mode }) {
+          return mode === 'development'; // запускать плагин только в режиме разработки 
+      },
+
+      /* Хук, получающий данные конфигурации и присваивающий значение переменной config
+      для дальнейшего использования данных конфигурация в других хуках */
+      configResolved(resolvedConfig) {
+          config = resolvedConfig;
+      },
+
+      /**
+       * Hook-функция, выполняемая при каждом импорте любых модулей в js-файлах
+       * @param src - содержимое импортируемого подуля
+       * @param id - путь к данному модулую
+       */
+      transform(src, id) {
+        // использования данных конфигурации из "configResolved"
+        const columns = config.command === 'serve'
+
+        // если импортируется модуль с расширением .csv
+        if (/\.csv$/.test(id)) {
+          /* парсинг csv-контента при помощи пакета "csv-parse"
+          с добавленим названия колонок как поля в объекта */
+          const records = parse(src, { columns });
+          return {
+            // экпорт данных в виде строки, чтобы их можно было импортировать в другой модуль
+            code: `export default ${JSON.stringify(records)}`;
+          }
+        }
+      },
+
+      // Хук для преобразования index.html (параметр html)
+      transformIndexHtml(html) {
+          console.log(html); // html-код из index.html
+          return html.replace('</body>', '<script>alert("transformIndexHtml");</script></body>');
+      }
+    }
+  ]
+}
+```
+
+Теперь _Vite_ сможет преобразовать CSV-данные:
+
+```csv
+id,name,quantity
+0,apple,10
+```
+
+В валидный ES-модуль и импортировать его в виде объекта/массива:
+
+```javascript
+import products from './products.csv';
+console.log(products); // [{ "id": "0", "name": "apple", "quantity": "10" }]
+```
+
+### Конфигурация плагина
+
+Часто vite-плагины оформляются с помощью функций-фабрик:
+
+```javascript
+// vite-plugin-csv.js
+export default () => ({
+  name: '',
+  apply(config, { command, mode }) {},
+  resolvedConfig(config) {},
+  transform(data, path) {},
+  transformIndexHtml(html) {},
+})
+```
+
+В конфигурации - в массиве `plugins` просто вызываем импортированную функцию-фабрику:
+
+```javascript
+// vite.config.js
+import Csv from './vite-plugin-csv.js';
+
+export default {
+  plugins: [
+    Csv()
+  ]
+}
+```
+
+### Существующие Vite-плагины
+
+Официальная страница, посвященная vite-плагинам: [ссылка](https://vitejs.dev/plugins/). _Vite_ основан на сборщике _Roolup_, поэтому большинство rollup-плагинов также подходят для _Vite_: [ссылка](https://vite-rollup-plugins.patak.dev/). Большой список сторонних плагинов: [ссылка](https://github.com/rollup/awesome), [ещё ссылка](https://github.com/vitejs/awesome-vite).
+
