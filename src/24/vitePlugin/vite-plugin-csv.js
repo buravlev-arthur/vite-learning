@@ -50,6 +50,30 @@ export default () => {
             }
         },
 
+        // Хук, включающий горячую перезагрузку (HMR), вызывается при изменении импортируемых модулей
+        async handleHotUpdate(context) {
+            // если изменен модуль с расширением .csv
+            if (/\.csv$/.test(context.file)) {
+                // отправляем через web-socket соединение dev-сервера сообщение браузеру
+                context.server.ws.send({
+                    // тип сообщения
+                    type: 'custom',
+                    // название события
+                    event: 'csv-update',
+                    // считываем (read) и передаём браузеру новые данные импортируемого модуля
+                    data: {
+                        // путь к обновленному модулую
+                        url: context.modules[0].url,
+                        // обновленные данные модуля
+                        data: parse(await context.read(), { columns: true })
+                    }
+
+                });
+                // хук возвращает пустой массив - будем сами обрабатывать HMR
+                return [];
+            }
+        },
+
         // Хук для преобразования index.html (параметр html)
         transformIndexHtml(html) {
             // console.log(html); // html-код из index.html

@@ -1113,3 +1113,72 @@ export default {
   preview: { /* аналогичные опции */ }
 }
 ```
+
+## Горячая замена модулей (HMR)
+
+Vite-плагины по-умолчанию, при изменении обрабатываемых ими данных перезагружают страницу целиком. Можно для плагинов подключить _HMR_.
+
+Конфигурация HMR в коде плагина:
+
+```javascript
+// vite-plugin-name.js
+export default () => ({
+  // Хук, включающий горячую перезагрузку (HMR), вызывается при изменении импортируемых модулей
+  async handleHotUpdate(context) {
+    // если изменен модуль с расширением .csv
+    if (/\.csv$/.test(context.file)) {
+      // отправляем через web-socket соединение dev-сервера сообщение браузеру
+      context.server.ws.send({
+        // тип сообщения
+        type: 'custom',
+        // название события
+        event: 'csv-update',
+        // считываем сырые данные (read) из обновленного модуля и передаём браузеру новые данные
+        data: await context.read()
+      });
+      // хук возвращает пустой массив - будем сами обрабатывать HMR
+      return [];
+    }
+  },
+});
+```
+
+Обновленные данные, передаваемые в свойство `data` ws-сообщения необходимо обрабатывать также, как они обрабатываются в хуке "transform". Например, преобразуем CSV-данные в валидный JS-объект. Дополнительно отдаём клиенту в поле `data` путь к обновленному модулю:
+
+```javascript
+// vite-plugin-name.js
+import { parse } from 'csv-parse/sync';
+
+export default () => ({
+  async handleHotUpdate(context) {
+    // ...
+    context.server.ws.send({
+      // ...
+      data: {
+          // путь к обновленному модулую
+          url: context.modules[0].url,
+          // обновленные и обработанные (преобразованные) данные модуля
+          data: parse(await context.read(), { columns: true })
+      }
+    });
+    // ...
+  }
+})
+```
+
+Обработка HMR на стороне клиента:
+
+```javascript
+// main.js
+
+// проверяем, существует ли Vite-объект "hot", отвечающий за горячую замену модулей
+if (import.meta.hot) {
+    /* прослушиваем событие "csv-update" (указано в конфигурации сообщения)
+    url - путь к обновленному модулю
+    data - обновленные данные импортируемого модуля, переденные в поле "data" ws-сообщения */
+    import.meta.hot.on('csv-update', ({ url, data }) => {
+        console.info(`[vite] hot updated: ${url}`);
+        document.querySelector('pre').textContent = JSON.stringify(data);
+    });
+}
+```
