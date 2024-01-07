@@ -1077,3 +1077,39 @@ export default {
 
 Официальная страница, посвященная vite-плагинам: [ссылка](https://vitejs.dev/plugins/). _Vite_ основан на сборщике _Roolup_, поэтому большинство rollup-плагинов также подходят для _Vite_: [ссылка](https://vite-rollup-plugins.patak.dev/). Большой список сторонних плагинов: [ссылка](https://github.com/rollup/awesome), [ещё ссылка](https://github.com/vitejs/awesome-vite).
 
+## Конфигурация сервера
+
+Конфигурировать можно как dev-сервер (поле `server`), так и preview-сервер сборки приложения (поле `preview`):
+
+```javascript
+// vite.config.js
+
+export default {
+  server: {
+    // порт dev-сервера
+    port: '3000',
+    // отключить инкрементацию порта (всегда запускать dev-server на одном и том же порте)
+    strictPort: true,
+    // адрес запроса при открытии приложения в браузере
+    open: '/api/products',
+    // заголовки ответа (Response) на запросы
+    headers: {
+      'X-App-Mode': 'development',
+    },
+    // проксирование запросов: localhost:8080/products -> dummyjson.com/products
+    proxy: {
+      '/products': 'https://dummyjson.com',
+      // конфигурация proxy в виде объекта
+      '/api': {
+        // адрес переадресации
+        target: 'https://dummyjson.com',
+        // изменение заголовка "Origin" на адрес из поля target
+        changeOrigin: true,
+        // преобразование пути запроса
+        rewrite: (path) => path.replace(/\/api/, '')
+      }
+    },
+  },
+  preview: { /* аналогичные опции */ }
+}
+```
