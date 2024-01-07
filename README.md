@@ -1182,3 +1182,79 @@ if (import.meta.hot) {
     });
 }
 ```
+
+## Взаимодействие клиента и сервера
+
+C помощью WebSocket соединения с клиентом (браузером), dev-сервер может отправлять ws-сообщения клиенту и слушать сообщения, отправленные клиентом ему в ответ.
+
+### Отправка сообщения из сервера к клиенту
+
+Сервер (плагин):
+
+```javascript
+// vite-plugin-name.js
+
+export default () => ({
+  // Хук, обработки конфигурации dev-сервера
+  // server - данные конфигурации сервера
+  configureServer(server) {
+    // слушаем событие установки ws-соединения
+    server.ws.on('connection', () => {
+      // 1 параметр - название события (event)
+      // 2 параметр - передаваемые данные (data)
+      server.ws.send('connected', 'Connection established');
+    });
+  },
+})
+```
+
+Клиент:
+
+```javascript
+// main.js
+
+// проверяем, существует ли Vite-объект "hot", отвечающий за горячую замену модулей
+if (import.meta.hot) {
+    // слушаем событие установки соединения (сообщение от сервера)
+    import.meta.hot.on('connected', (message) => {
+        console.log(message);
+    });
+}
+```
+
+### Отправка сообщения с клиента на сервер
+
+Клиент:
+
+```javascript
+// проверяем, существует ли Vite-объект "hot", отвечающий за горячую замену модулей
+if (import.meta.hot) {
+    // отправляем сообщение серверу (событие "ping")
+    import.meta.hot.send('ping', 'Hello, server!');
+
+    // слушаем ответ сервера на сообщение (вызываемое событие "ping")
+    import.meta.hot.on('pong', (message) => {
+        console.log(message);
+    });
+}
+```
+
+Сервер:
+
+```javascript
+// vite-plugin-name.js
+
+export default () => ({
+  configureServer(server) {
+    // слушаем событие "ping", отправляемое клиентом
+    // message - данные от клиента
+    // ws - вебсокет для обратного взаимодействия с клиентом
+    server.ws.on('ping', (message, ws) => {
+      console.log(message);
+      ws.send('pong', 'Hello, client!');
+    });
+  },
+});
+```
+
+Vite-объект `import.meta.hot` существует только у dev-сервера. В Production-среде его нет.
