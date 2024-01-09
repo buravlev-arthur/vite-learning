@@ -3,6 +3,7 @@ import typeChecker from 'vite-plugin-checker';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
 export default {
+  base: '/vite-learning/',
   // publicDir: 'build',
   // envPrefix: 'APP_',
   server: {

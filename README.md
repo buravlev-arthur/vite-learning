@@ -1483,3 +1483,20 @@ const App = () => {
 }
 export default App;
 ```
+
+## Деплой на Github Pages
+
+Указываем в конфигурации параметр base с названием репозитория:
+
+```javascript
+// vite.config.js
+
+export default {
+  // базовый путь к страницам приложения (schema://host:port/base/)
+  base: '/vite-learning/'
+}
+```
+
+В настройках репозитория (Settings) выбираем пункт "Pages", в списке "Source" выбираем "GitHub Actions" и далее ссылка: "Create your own".
+
+В окно редактора копируем workflow-код из примера в [документации _Vite](https://vitejs.dev/guide/static-deploy.html#github-pages), даём название action'у: `deploy.yml` и создаём коммит (кнопка `Commit changes...`).
