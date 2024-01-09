@@ -1422,3 +1422,64 @@ import App from './App.vue';
 
 createApp(App).mount('#app');
 ```
+
+## React-проект
+
+Автоматическое разворачивание проекта:
+
+```bash
+bunx create-vite react-app --template react
+```
+
+### Ручный способ
+
+`@vitejs/plugin-react` обеспечивает поддержку react-компонент в _Vite_, `react-dom` внедряет react-приложение в DOM-дерево и рендерит приложение на стороне сервера. `react` содержит весь функционал для разработки react-компонент:
+
+```bash
+bun i react react-dom @vitejs/plugin-react
+```
+
+Подключаем плагин:
+
+```javascript
+// vite.config.js
+import React from '@vitejs/plugin-react';
+
+export default {
+    plugins: [
+        React()
+    ]
+};
+```
+
+Теперь можно реализовывать React-проект:
+
+```html
+<!-- index.html -->
+<body>
+  <div id="app"></div>
+  <script type="module" src="/main.jsx"></script>
+</body>
+```
+
+```jsx
+// main.jsx
+import ReactDOM from 'react-dom/client';
+import App from './App.jsx'
+ReactDOM.createRoot(document.querySelector('#app')).render(<App />);
+```
+
+```jsx
+// App.jsx
+import { useState } from 'react';
+
+const App = () => {
+  const [count, setCount] = useState(0);
+  return (
+    <>
+      <button onClick={() => useState((count) => ++count)}>Count: { count }</button>
+    </>
+  )
+}
+export default App;
+```
