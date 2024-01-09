@@ -1366,3 +1366,59 @@ if (import.meta.hot) {
   });
 }
 ```
+
+## Vue-проект
+
+Автоматический способ разворчанивания Vite-проекта:
+
+```bash
+bunx create-vite my-vue-app --template vue
+```
+
+### Ручной способ
+
+Фреймворк _Vue_ обеспечивает весь Vue-API, Vite-плагин для Vue обеспечивает поддержку файлов с расширением `.vue` (SFC)
+
+```bash
+bun i vue @vitejs/plugin-vue
+```
+
+Vue-плагин подключаем в `vite.config.js`:
+
+```javascript
+import vue from from '@vitejs/plugin-vue';
+
+export default {
+  plugins: [vue()]
+}
+```
+
+Теперь можно разрабатывать Vue-приложение привычным образом:
+
+```html
+<!-- index.html -->
+<body>
+  <div id="app"></div>
+  <script type="module" src="/main.js"></script>
+</body>
+```
+
+```vue
+// App.vue
+<script setup>
+  import { ref } from 'vue';
+  const counter = ref(0);
+</script>
+
+<template>
+  <button @click="() => counter++">Counter: {{ counter }}</button>
+</template>
+```
+
+```javascript
+// /main.js
+import { createApp } from 'vue';
+import App from './App.vue';
+
+createApp(App).mount('#app');
+```
