@@ -1499,4 +1499,4 @@ export default {
 
 В настройках репозитория (Settings) выбираем пункт "Pages", в списке "Source" выбираем "GitHub Actions" и далее ссылка: "Create your own".
 
-В окно редактора копируем workflow-код из примера в [документации _Vite](https://vitejs.dev/guide/static-deploy.html#github-pages), даём название action'у: `deploy.yml` и создаём коммит (кнопка `Commit changes...`).
+В окно редактора копируем workflow-код из примера в [документации _Vite](https://vitejs.dev/guide/static-deploy.html#github-pages). Учитываем в шагах action'а выбранный пакетный менеджер (в данном проекте это Bun). Даём название action'у: `deploy.yml` и создаём коммит (кнопка `Commit changes...`).
