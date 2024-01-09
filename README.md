@@ -1258,3 +1258,111 @@ export default () => ({
 ```
 
 Vite-объект `import.meta.hot` существует только у dev-сервера. В Production-среде его нет.
+
+## hot.accept()
+
+Предотвратить полную перезагрузку модуля при изменении его данных можно с помощью метода `accept` объекта `import.meta.hot`:
+
+```javascript
+// module.js
+export default 'Измени эту строку для демонстрации HRM';
+
+if (import.meta.hot) {
+  // обработка HMR при обновлении модуля
+  import.meta.hot.accept((updatedModuleData) => {
+      if (updatedModuleData) { // при ошибке в модуле значением будет undefined
+          console.log(updatedModuleData);
+      }
+  });
+}
+```
+
+Также можно реализовать обработку HMR для подмодулей:
+
+```javascript
+import './submodle.js';
+
+// обработка HMR при обновлении импортируемых модулей
+// 1 параметр - массив с адресами модулей, для которых нужен HMR
+import.meta.hot.accept(['./submodule.js'], ([subModuleUpdatedData]) => {
+  if (subModuleUpdatedData) {
+    console.log(subModuleUpdatedData);
+  }
+});
+```
+
+
+## hot.dispose()
+
+Импортируемые модули могут оставлять после выполнения side-эффекты (побочные эффекты): вывод в консоль, мутация DOM-дерева, изменение данных в LocalStorage и т.п. С помощью метода `hot.dispose` можно отменять побочные эффекты модулей при их горячей замене.
+ 
+Пусть побочным эффектом модуля будет добавление стилей в `index.html`:
+
+```javascript
+// module.js
+
+let styles;
+
+const addStylesheet = () => {
+    styles = document.createElement('style');
+    style.textContent = 'body { background: #000; color: orange }';
+    document.head.append(style);
+};
+
+// горячая перезагрузка модуля
+if (import.meta.hot) {
+  import.meta.hot.accept();
+}
+
+// добавляем стили в документ
+addStylesheet();
+```
+
+При каждом изменении стилей, HMR будет добавлять новый тег `<style>` с обновленными стилями в `head` документа. С помощью метода `dispose` объекта `import.meta.hot` можно избавляться от побочных эффектов предыдущего горячего обновления модуля:
+
+```javascript
+// module.js
+
+// удаляем стили, присвоенные переменной "styles" в функции "addStylesheet" (пример выше)
+const removeStylesheet = () => {
+    styles.remove()
+};
+
+if (import.meta.hot) {
+  // dispose вызывается раньше, чем accept
+  import.meta.hot.dispose(() => {
+    removeStylesheet();
+  })
+}
+```
+
+## Предустановленные события hot.on()
+
+Помимо кастомных событий для [обмена сообщениями между клиентом и сервером](#взаимодействие-клиента-и-сервера), Vite имеет предустановленные события:
+
+- vite:BeforeUpdate
+
+- vite:AfterUpdate
+
+- vite:BeforeFullReload
+
+- vite:BeforePrune (перед удалением ненужного модуля)
+
+- vite:invalidate (`import.meta.host.invalidate()`)
+
+- vite:error (синтаксическая ошибка в обновляемом модуле)
+
+- vite:ws:disconnect
+
+- vite:ws:connect
+
+Пример использования:
+
+```javascript
+// module.js
+if (import.meta.hot) {
+  import.meta.hot.on('vite:beforeUpdate', (data) => {
+    console.log(data); // объект с данными обновления, ошибки, инвалидации и т.д.
+  });
+}
+```

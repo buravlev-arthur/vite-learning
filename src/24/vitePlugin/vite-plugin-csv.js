@@ -52,22 +52,22 @@ export default () => {
 
         // Хук, обработки конфигурации dev-сервера
         // server - данные конфигурации сервера
-        configureServer(server) {
-            // слушаем событие установки ws-соединения
-            server.ws.on('connection', () => {
-                // 1 параметр - название события (event)
-                // 2 параметр - передаваемые данные (data)
-                server.ws.send('connected', 'Connection established');
-            });
+        // configureServer(server) {
+        //     // слушаем событие установки ws-соединения
+        //     server.ws.on('connection', () => {
+        //         // 1 параметр - название события (event)
+        //         // 2 параметр - передаваемые данные (data)
+        //         server.ws.send('connected', 'Connection established');
+        //     });
 
-            // слушаем событие "ping", отправляемое клиентом
-            // message - данные от клиента
-            // ws - вебсокет для обратного взаимодействия с клиентом
-            server.ws.on('ping', (message, ws) => {
-                console.log(message);
-                ws.send('pong', 'Hello, client!');
-            });
-        },
+        //     // слушаем событие "ping", отправляемое клиентом
+        //     // message - данные от клиента
+        //     // ws - вебсокет для обратного взаимодействия с клиентом
+        //     server.ws.on('ping', (message, ws) => {
+        //         console.log(message);
+        //         ws.send('pong', 'Hello, client!');
+        //     });
+        // },
 
         // Хук, включающий горячую перезагрузку (HMR), вызывается при изменении импортируемых модулей
         async handleHotUpdate(context) {
